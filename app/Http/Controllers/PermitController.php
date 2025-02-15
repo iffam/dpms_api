@@ -41,7 +41,15 @@ class PermitController extends Controller
 
         if ($user && $permit = $user->permit) {
             $zones = $permit->zones->pluck('code');
-            $qr = QrCode::format('png')->size(200)->generate($zones);
+
+            $qr_data = [
+                'permit_no' => $permit->id,
+                'name' => $user->name,
+                'employee_number' => $user->employee_number,
+                'zones' => $zones
+            ];
+
+            $qr = QrCode::format('png')->size(200)->generate(json_encode($qr_data));
             $qrBase64 = base64_encode($qr);
 
             $response = [
