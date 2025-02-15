@@ -40,6 +40,7 @@ Route::middleware('auth:api')->name('api.')->group(function () {
     Route::controller(PermitController::class)->prefix('permits')->name('permits.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/mypermit', 'myPermit')->name('myPermit');
+        Route::post('/validate', 'validate')->name('validate');
     });
 });
 

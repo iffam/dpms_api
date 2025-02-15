@@ -65,4 +65,33 @@ class PermitController extends Controller
         }
         return response()->json(['message' => 'No permit found'], 404);
     }
+
+
+    public function validate(Request $request)
+    {
+        $request->validate([
+            'permit_no' => 'required|exists:permits,id',
+            'zones' => 'required|array',
+            'zones.*' => 'string|exists:zones,code'
+        ]);
+
+        $permit = Permit::find($request->permit_no);
+
+        $validZones = $permit->zones->pluck('code')->toArray();
+        $invalidZones = array_diff($request->zones, $validZones);
+
+        if (!empty($invalidZones)) {
+            return response()->json(['message' => 'Invalid zones: ' . implode(', ', $invalidZones)], 400);
+        }
+
+        foreach ($request->zones as $zone) {
+            if (!$permit->zones->contains('code', $zone)) {
+            return response()->json(['message' => 'Invalid zone: ' . $zone], 400);
+            }
+        }
+
+        return response()->json(['message' => 'Valid permit'], 200);
+
+        return response()->json(['message' => 'Invalid permit'], 200);
+    }
 }
