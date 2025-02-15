@@ -58,7 +58,7 @@ class User extends Authenticatable
 
     public function permitRequestApplications()
     {
-        return $this->hasMany(PermitRequestApplication::class)->withTimestamps();
+        return $this->hasMany(PermitRequestApplication::class);
     }
 
     public function permit()

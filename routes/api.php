@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\PermitController;
+use App\Http\Controllers\PermitRequestApplicationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ZoneController;
 use Illuminate\Http\Request;
@@ -57,6 +58,12 @@ Route::middleware('auth:api')->name('api.')->group(function () {
         Route::controller(PermitController::class)->prefix('permits')->name('permits.')->group(function () {
             Route::post('/validate', 'validate')->name('validate');
         });
+    });
+
+
+    Route::controller(PermitRequestApplicationController::class)->prefix('applications')->name('applications.')->group(function () {
+        Route::get('/', 'index')->name('index')->middleware('role:admin');
+        Route::get('/myapplication', 'myApplication')->name('my-pplication')->middleware('role:staff');
     });
 });
 
