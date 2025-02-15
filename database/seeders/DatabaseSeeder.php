@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        Artisan::call('passport:keys --force');
 
         // Create personal access client
         Artisan::call('passport:client', [
