@@ -40,16 +40,18 @@ class PermitController extends Controller
         $user = auth()->user();
 
         if ($user && $permit = $user->permit) {
-            $qr = QrCode::format('png')->size(200)->generate('Make me into a QrCode!');
+            $zones = $permit->zones->pluck('code');
+            $qr = QrCode::format('png')->size(200)->generate($zones);
             $qrBase64 = base64_encode($qr);
-        
+
             $response = [
+                'permit_no' => $permit->id,
                 'name' => $user->name,
                 'employee_number' => $user->employee_number,
-                'zones' => $permit->zones->pluck('code'),
+                'zones' => $zones,
                 'qrCode' => 'data:image/png;base64,' . $qrBase64
             ];
-        
+
 
             return response()->json($response, 200);
         }
