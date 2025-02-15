@@ -63,7 +63,7 @@ class PermitController extends Controller
 
             return response()->json($response, 200);
         }
-        return response()->json(['message' => 'No permit found'], 404);
+        return response()->json(['message' => 'No permit found'], 200);
     }
 
 
