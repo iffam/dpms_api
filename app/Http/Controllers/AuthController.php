@@ -36,6 +36,7 @@ class AuthController extends Controller
             'updated_at' => $user->updated_at,
             'accessToken' => $token->accessToken,
             'token_expires_at' => $token->token->expires_at,
+            'roles' => $user->roles->pluck('name'),
         ], 200);
     }
 

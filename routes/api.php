@@ -13,34 +13,50 @@ Route::get('/auth_user', function (Request $request) {
 })->middleware('auth:api');
 
 Route::middleware('auth:api')->name('api.')->group(function () {
-    Route::controller(DepartmentController::class)->prefix('departments')->name('departments.')->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::post('/', 'store')->name('store');
-        Route::get('/{id}', 'show')->name('show');
-        Route::put('/{id}', 'update')->name('update');
-        Route::delete('/{id}', 'destroy')->name('destroy');
+
+
+    Route::group(['middleware' => ['role:staff']], function () {
+        Route::controller(PermitController::class)->prefix('permits')->name('permits.')->group(function () {
+            Route::get('/mypermit', 'myPermit')->name('myPermit');
+        });
     });
 
-    Route::controller(ZoneController::class)->prefix('zones')->name('zones.')->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::post('/', 'store')->name('store');
-        Route::get('/{id}', 'show')->name('show');
-        Route::put('/{id}', 'update')->name('update');
-        Route::delete('/{id}', 'destroy')->name('destroy');
+    Route::group(['middleware' => ['role:admin']], function () {
+        Route::controller(PermitController::class)->prefix('permits')->name('permits.')->group(function () {
+            Route::get('/', 'index')->name('index');
+        });
+
+        Route::controller(DepartmentController::class)->prefix('departments')->name('departments.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{id}', 'show')->name('show');
+            Route::put('/{id}', 'update')->name('update');
+            Route::delete('/{id}', 'destroy')->name('destroy');
+        });
+
+
+        Route::controller(UserController::class)->prefix('users')->name('users.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{id}', 'show')->name('show');
+            Route::put('/{id}', 'update')->name('update');
+            Route::delete('/{id}', 'destroy')->name('destroy');
+        });
+
+
+        Route::controller(ZoneController::class)->prefix('zones')->name('zones.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{id}', 'show')->name('show');
+            Route::put('/{id}', 'update')->name('update');
+            Route::delete('/{id}', 'destroy')->name('destroy');
+        });
     });
 
-    Route::controller(UserController::class)->prefix('users')->name('users.')->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::post('/', 'store')->name('store');
-        Route::get('/{id}', 'show')->name('show');
-        Route::put('/{id}', 'update')->name('update');
-        Route::delete('/{id}', 'destroy')->name('destroy');
-    });
-
-    Route::controller(PermitController::class)->prefix('permits')->name('permits.')->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::get('/mypermit', 'myPermit')->name('myPermit');
-        Route::post('/validate', 'validate')->name('validate');
+    Route::group(['middleware' => ['role:security-officer']], function () {
+        Route::controller(PermitController::class)->prefix('permits')->name('permits.')->group(function () {
+            Route::post('/validate', 'validate')->name('validate');
+        });
     });
 });
 
