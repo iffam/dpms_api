@@ -60,4 +60,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(PermitRequestApplication::class)->withTimestamps();
     }
+
+    public function permit()
+    {
+        return $this->hasOne(Permit::class);
+    }
 }

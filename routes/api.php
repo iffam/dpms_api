@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\PermitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ZoneController;
 use Illuminate\Http\Request;
@@ -34,6 +35,11 @@ Route::middleware('auth:api')->name('api.')->group(function () {
         Route::get('/{id}', 'show')->name('show');
         Route::put('/{id}', 'update')->name('update');
         Route::delete('/{id}', 'destroy')->name('destroy');
+    });
+
+    Route::controller(PermitController::class)->prefix('permits')->name('permits.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/mypermit', 'myPermit')->name('myPermit');
     });
 });
 

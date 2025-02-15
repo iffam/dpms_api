@@ -18,6 +18,7 @@ class Permit extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'user_id',
         'permit_request_application_id',
         'permit_type',
         'active_at',
@@ -48,6 +49,11 @@ class Permit extends Model
         return [
             'requires_supervision' => true,
         ];
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class)->withTimestamps();
     }
 
     public function zones(): BelongsToMany

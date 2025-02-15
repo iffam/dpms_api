@@ -35,6 +35,7 @@ class PermitRequestApplicationFactory extends Factory
         return $this->afterCreating(function ($request) {
             if (rand(0, 1)) {
                 $new_request = \App\Models\Permit::factory()->create([
+                    'user_id' => $request->user_id,
                     'permit_request_application_id' => $request->id,
                     'permit_type' => $request->permit_type,
                     'active_at' => $request->active_at,
