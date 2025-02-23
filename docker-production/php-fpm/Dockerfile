@@ -1,13 +1,17 @@
 # Stage 1: Build environment and Composer dependencies
-FROM php:8.1-fpm AS builder
+FROM php:8.3-fpm AS builder
 
 # Install system dependencies and PHP extensions required for Laravel + MySQL/PostgreSQL support
 # Some dependencies are required for PHP extensions only in the build stage
 # We don't need to install Node.js or build assets, as it was done in the Nginx image
-RUN apt-get update && apt-get install -y \
-    libmagickwand-dev \
-    imagemagick \
-    && rm -rf /var/lib/apt/lists/*
+RUN curl -L -o /tmp/imagick.tar.gz https://github.com/Imagick/imagick/archive/refs/tags/3.7.0.tar.gz \
+    && tar --strip-components=1 -xf /tmp/imagick.tar.gz \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    && echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini \
+    && rm -rf /tmp/*
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
@@ -22,9 +26,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
-    pkg-config \
-    build-essential \
-    autoconf \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
     pdo_mysql \
@@ -36,8 +37,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bcmath \
     soap \
     gd \
-    && printf "\n" | pecl install imagick\ 
-    && docker-php-ext-enable imagick \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -68,7 +67,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 
 # Stage 2: Production environment
-FROM php:8.1-fpm AS production
+FROM php:8.3-fpm AS production
 
 # Install only runtime libraries needed in production
 # libfcgi-bin and procps are required for the php-fpm-healthcheck script
