@@ -4,6 +4,11 @@ FROM php:8.4-fpm AS builder
 # Install system dependencies and PHP extensions required for Laravel + MySQL/PostgreSQL support
 # Some dependencies are required for PHP extensions only in the build stage
 # We don't need to install Node.js or build assets, as it was done in the Nginx image
+RUN apt-get update && apt-get install -y \
+    libmagickwand-dev \
+    imagemagick \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     unzip \
@@ -17,9 +22,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
-    libmagickwand-dev \
-    libmagickcore-dev \
-    imagemagick \
     pkg-config \
     build-essential \
     autoconf \
