@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpng-dev \
     libmagickwand-dev \
     libmagickcore-dev \
+    libmagickcore-dev \
     pkg-config \
     build-essential \
     autoconf \
@@ -33,7 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bcmath \
     soap \
     gd \
-    && pecl install imagick-3.7.0 \
+    && pecl install imagick \
     && docker-php-ext-enable imagick \
     && pecl install redis \
     && docker-php-ext-enable redis \
