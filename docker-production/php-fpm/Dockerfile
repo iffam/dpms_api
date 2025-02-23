@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bcmath \
     soap \
     gd \
-    && pecl install imagick; \
+    && pecl install imagick \
     && docker-php-ext-enable imagick \
     && pecl install redis \
     && docker-php-ext-enable redis \
