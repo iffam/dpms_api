@@ -4,16 +4,19 @@ FROM php:8.3-fpm AS builder
 # Install system dependencies and PHP extensions required for Laravel + MySQL/PostgreSQL support
 # Some dependencies are required for PHP extensions only in the build stage
 # We don't need to install Node.js or build assets, as it was done in the Nginx image
-RUN curl -L -o /tmp/imagick.tar.gz https://github.com/Imagick/imagick/archive/refs/tags/3.7.0.tar.gz \
-    && tar --strip-components=1 -xf /tmp/imagick.tar.gz \
-    && phpize \
-    && ./configure \
-    && make \
-    && make install \
-    && echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini \
-    && rm -rf /tmp/*
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    libmemcached-dev \
+    libz-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libfreetype6-dev \
+    openssh-server \
+    libmagickwand-dev \
+    git \
+    cron \
+    nano \
+    libreadline-dev \
+    libgmp-dev \
     curl \
     unzip \
     libpq-dev \
@@ -23,10 +26,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     libicu-dev \
     libzip-dev \
-    libfreetype6-dev \
-    libjpeg62-turbo-dev \
-    libpng-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
     pdo_mysql \
     pdo_pgsql \
@@ -36,11 +35,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zip \
     bcmath \
     soap \
-    gd \
     && pecl install redis \
     && docker-php-ext-enable redis \
+    && pecl install imagick && \
+    && docker-php-ext-enable imagick \
+    && docker-php-ext-install gd \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd \
     && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+   
 # Set the working directory inside the container
 WORKDIR /var/www
 
