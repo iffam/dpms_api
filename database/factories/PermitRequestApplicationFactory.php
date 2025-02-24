@@ -33,7 +33,6 @@ class PermitRequestApplicationFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function ($request) {
-            if (rand(0, 1)) {
                 $new_request = \App\Models\Permit::factory()->create([
                     'user_id' => $request->user_id,
                     'permit_request_application_id' => $request->id,
@@ -53,7 +52,6 @@ class PermitRequestApplicationFactory extends Factory
                         ]);
                     }
                 }
-            }
         });
     }
 }

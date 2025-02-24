@@ -58,14 +58,9 @@ class UserFactory extends Factory
                 $user->department()->associate($department);
                 $user->save();
             }
-
-            $submit_application = rand(1, 100) <= 75 ? false : true;
-
-            if ($submit_application) {
                 \App\Models\PermitRequestApplication::factory()->create([
                     'user_id' => $user->id,
                 ]);
-            }
         });
     }
 }
