@@ -41,7 +41,7 @@ class PermitController extends Controller
 
         if ($user && $permit = $user->permit) {
             $zones = $permit->zones->pluck('code');
-
+            $expire_alert = $permit->expired_at ? ($permit->expired_at->diffInDays(now()) < 7 ? round(abs($permit->expired_at->diffInDays(now()))) : null) : null;
             $qr_data = [
                 'permit_no' => $permit->id,
                 'name' => $user->name,
@@ -57,6 +57,7 @@ class PermitController extends Controller
                 'name' => $user->name,
                 'employee_number' => $user->employee_number,
                 'zones' => $zones,
+                'expire_alert' => $expire_alert,
                 'qrCode' => 'data:image/png;base64,' . $qrBase64
             ];
 
@@ -86,7 +87,7 @@ class PermitController extends Controller
 
         foreach ($request->zones as $zone) {
             if (!$permit->zones->contains('code', $zone)) {
-            return response()->json(['message' => 'Invalid zone: ' . $zone], 400);
+                return response()->json(['message' => 'Invalid zone: ' . $zone], 400);
             }
         }
 
