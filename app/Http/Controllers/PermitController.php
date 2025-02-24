@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Permit;
+use App\Models\PermitUsage;
+use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -73,12 +75,14 @@ class PermitController extends Controller
     public function validate(Request $request)
     {
         $request->validate([
+            'checkpoint' => 'required|string',
             'permit_no' => 'required|exists:permits,id',
             'zones' => 'required|array',
             'zones.*' => 'string|exists:zones,code'
         ]);
 
         $permit = Permit::find($request->permit_no);
+        $checkpoint = Zone::where('code', $request->checkpoint)->first();
 
         $validZones = $permit->zones->pluck('code')->toArray();
         $invalidZones = array_diff($request->zones, $validZones);
@@ -91,6 +95,10 @@ class PermitController extends Controller
             if (!$permit->zones->contains('code', $zone)) {
                 return response()->json(['message' => 'Invalid zone: ' . $zone], 400);
             }
+            PermitUsage::create([
+                'permit_id' => $permit->id,
+                'zone_id' => $checkpoint->id,
+            ]);
         }
 
         return response()->json(['message' => 'Valid permit'], 200);
