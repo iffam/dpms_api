@@ -37,7 +37,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     soap \
     && pecl install redis \
     && docker-php-ext-enable redis \
-    && pecl install imagick && \
+    && pecl install imagick \
     && docker-php-ext-enable imagick \
     && docker-php-ext-install gd \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
