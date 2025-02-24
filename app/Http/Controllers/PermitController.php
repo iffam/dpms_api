@@ -17,6 +17,7 @@ class PermitController extends Controller
         Paginator::currentPageResolver(fn() => $page);
 
         $permit = Permit::query()
+            ->with('usages.zone')
             ->orderBy('created_at', 'desc')
             ->paginate($size);
 
