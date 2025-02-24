@@ -18,6 +18,7 @@ class PermitController extends Controller
 
         $permit = Permit::query()
             ->with('usages.zone')
+            ->with('user')
             ->orderBy('created_at', 'desc')
             ->paginate($size);
 
