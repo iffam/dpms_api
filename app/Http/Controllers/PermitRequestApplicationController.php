@@ -12,12 +12,23 @@ class PermitRequestApplicationController extends Controller
 {
     public function index(Request $request)
     {
+
+        if ($request->query('filter')) {
+            $filter = $request->query('filter');
+        }
+        if ($filter === 'all') {
+            $filter = null;
+        }
+
         $page = $request->query('page', 1);  // `page` parameter
         $size = $request->query('size', 10);
 
         Paginator::currentPageResolver(fn() => $page);
 
         $usr = PermitRequestApplication::query()
+            ->when($filter, function ($query, $filter) {
+                return $query->where('status', $filter);
+            })
             ->with('user')
             ->with('reviewedBy')
             ->orderBy('created_at', 'desc')
