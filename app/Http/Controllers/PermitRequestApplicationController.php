@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PermitRequestApplication;
+use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Carbon;
@@ -129,7 +130,7 @@ class PermitRequestApplicationController extends Controller
                 ]);
                 if ($request->zones) {
                     foreach ($permit_request_application->zones as $z) {
-                        $zone = \App\Models\Zone::where('code', $z)->first();
+                        $zone = Zone::where('code', $z)->first();
                         $permit->zones()->attach($zone);
                     }
                 }
