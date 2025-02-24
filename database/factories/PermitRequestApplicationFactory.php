@@ -47,6 +47,10 @@ class PermitRequestApplicationFactory extends Factory
                     foreach ($request->zones as $z) {
                         $zone = \App\Models\Zone::where('code', $z)->first();
                         $new_request->zones()->attach($zone);
+                        \App\Models\PermitUsage::create([
+                            'permit_id' => $new_request->id,
+                            'zone_id' => $zone->id,
+                        ]);
                     }
                 }
             }
