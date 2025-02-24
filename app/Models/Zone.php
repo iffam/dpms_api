@@ -28,4 +28,9 @@ class Zone extends Model
     {
         return $this->belongsToMany(Permit::class)->withTimestamps();
     }
+
+    public function permitUsages(): BelongsToMany
+    {
+        return $this->belongsToMany(PermitUsage::class);
+    }
 }

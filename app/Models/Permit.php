@@ -66,4 +66,9 @@ class Permit extends Model
     {
         return $this->belongsTo(PermitRequestApplication::class);
     }
+
+    public function usages()
+    {
+        return $this->hasMany(PermitUsage::class);
+    }
 }
