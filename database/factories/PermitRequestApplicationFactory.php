@@ -24,7 +24,7 @@ class PermitRequestApplicationFactory extends Factory
             'permit_type' => $permit_type,
             'active_at' => $permit_type === 'temporary' ? $active_at : null,
             'expired_at' => $permit_type === 'temporary' ? $this->faker->dateTimeBetween($active_at, 'now') : null,
-            'zones' => json_encode($this->faker->randomElements(['ZONE-A', 'ZONE-B', 'ZONE-C', 'ZONE-D', 'ZONE-E', 'ZONE-F', 'ZONE-G', 'ZONE-H'], $count = 2)),
+            'zones' => $this->faker->randomElements(['ZONE-A', 'ZONE-B', 'ZONE-C', 'ZONE-D', 'ZONE-E', 'ZONE-F', 'ZONE-G', 'ZONE-H'], $count = 2),
             'justification' => $this->faker->text(),
         ];
     }
@@ -44,7 +44,7 @@ class PermitRequestApplicationFactory extends Factory
                 $request->status = 'approved';
                 $request->save();
                 if ($request->zones) {
-                    foreach (json_decode($request->zones) as $z) {
+                    foreach ($request->zones as $z) {
                         $zone = \App\Models\Zone::where('code', $z)->first();
                         $new_request->zones()->attach($zone);
                     }

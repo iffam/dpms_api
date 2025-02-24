@@ -65,6 +65,8 @@ Route::middleware('auth:api')->name('api.')->group(function () {
         Route::get('/', 'index')->name('index')->middleware('role:admin');
         Route::get('/myapplication', 'myApplication')->name('my-application')->middleware('role:staff');
         Route::post('/myapplication', 'store')->name('store')->middleware('role:staff');
+        Route::post('/{permit_request_application}/review', 'review')->name('review')->middleware('role:admin');
+
     });
 });
 

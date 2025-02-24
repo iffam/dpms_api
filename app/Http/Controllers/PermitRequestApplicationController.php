@@ -6,6 +6,7 @@ use App\Models\PermitRequestApplication;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class PermitRequestApplicationController extends Controller
 {
@@ -18,6 +19,7 @@ class PermitRequestApplicationController extends Controller
 
         $usr = PermitRequestApplication::query()
             ->with('user')
+            ->with('reviewedBy')
             ->orderBy('created_at', 'desc')
             ->paginate($size);
 
@@ -86,5 +88,48 @@ class PermitRequestApplicationController extends Controller
         $permitRequestApplication->save();
 
         return response()->json($permitRequestApplication, 201);
+    }
+
+    public function review(Request $request,  PermitRequestApplication $permit_request_application)
+    {
+        $request->validate([
+            'status' => 'required|in:approved,rejected',
+            'justification' => 'required',
+        ]);
+
+        $user = auth()->user();
+        $permit_request_application->reviewed_by = $user->id;
+        $permit_request_application->status = $request->status;
+        $permit_request_application->justification = $request->justification;
+
+        $permit_request_application->save();
+
+        DB::beginTransaction();
+        try {
+            $permit_request_application->save();
+
+            if ($request->status === 'approved') {
+                $permit = $permit_request_application->permit()->create([
+                    'user_id' => $permit_request_application->user_id,
+                    'permit_request_application_id' => $permit_request_application->id,
+                    'permit_type' => $permit_request_application->permit_type,
+                    'active_at' => $permit_request_application->active_at,
+                    'expired_at' => $permit_request_application->expired_at,
+                ]);
+                if ($request->zones) {
+                    foreach ($permit_request_application->zones as $z) {
+                        $zone = \App\Models\Zone::where('code', $z)->first();
+                        $permit->zones()->attach($zone);
+                    }
+                }
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Failed to review permit request application'], 500);
+        }
+
+
+        return response()->json($permit_request_application, 200);
     }
 }

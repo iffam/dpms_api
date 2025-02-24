@@ -21,6 +21,7 @@ return new class extends Migration
             $table->dateTime('expired_at')->nullable();
             $table->jsonb('zones')->nullable();
             $table->text('justification')->nullable();
+            $table->foreignId('reviewed_by')->nullable()->constrained('users');
             $table->timestamps();
             $table->softDeletes();
         });
