@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\PermitRequestApplication;
 use App\Models\Zone;
+use Illuminate\Container\Attributes\Log;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log as FacadesLog;
 
 class PermitRequestApplicationController extends Controller
 {
@@ -128,8 +130,9 @@ class PermitRequestApplicationController extends Controller
                     'active_at' => $permit_request_application->active_at,
                     'expired_at' => $permit_request_application->expired_at,
                 ]);
-                if ($request->zones) {
+                if ($permit_request_application->zones) {
                     foreach ($permit_request_application->zones as $z) {
+
                         $zone = Zone::where('code', $z)->first();
                         $permit->zones()->attach($zone);
                     }
