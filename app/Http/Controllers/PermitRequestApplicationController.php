@@ -37,8 +37,23 @@ class PermitRequestApplicationController extends Controller
 
     public function myApplication(Request $request)
     {
+        $page = $request->query('page', 1);  // `page` parameter
+        $size = $request->query('size', 5);
+        Paginator::currentPageResolver(fn() => $page);
         $user = auth()->user();
-        $user->permitRequestApplications()->paginate(10);
-        return response()->json($user->permitRequestApplications, 200);
+        $usr =$user->permitRequestApplications()->with('user')->orderBy('created_at', 'desc')->paginate($size);
+        
+        $application = [
+            'data' => $usr->items(),
+            'pagination' => [
+                'totalResults' => $usr->total(),
+                'resultsPerPage' => $usr->perPage(),
+                'currentPage' => $usr->currentPage(),
+                'lastPage' => $usr->lastPage(),
+                'startIndex' => ($usr->currentPage() - 1) * $usr->perPage(),
+                'endIndex' => min($usr->currentPage() * $usr->perPage() - 1, $usr->total())
+            ]
+        ];
+        return response()->json($application, 200);
     }
 }

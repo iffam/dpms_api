@@ -11,6 +11,10 @@ class PermitRequestApplication extends Model
     /** @use HasFactory<\Database\Factories\PermitRequestApplicationFactory> */
     use HasFactory, SoftDeletes;
 
+    protected $casts = [
+        'zones' => 'json',
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
